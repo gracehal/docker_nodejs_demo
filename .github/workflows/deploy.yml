@@ -7,9 +7,11 @@ on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ master ]
+    tags:
+      - '*'
   schedule: 
     - cron: '50 13 * * *'
-
+  
 jobs:
   
   build:
