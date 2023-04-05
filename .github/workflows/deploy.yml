@@ -5,12 +5,42 @@ name: Deploy to ECR
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
-  push:
-    branches: [ master ]
-  schedule: 
-    - cron: '50 13 * * *'  
+  workflow_dispatch:
+    inputs:
+      environment:
+      type: environment
+  workflow_call: 
+    inputs:
+      branch:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+        
+        
+  permissions:
+    id-token: write
+    contents: write
   
 jobs:
+  
+  matrix_prep:
+    name: Discover build strategy
+    environment: ${{ inputs. environment }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ inputs.branch }}
+      
+    - name: Set desired commit SHA in output
+      id: set_commit_sha
+      run:
+        echo "COMMIT_SHA=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+    outputs:
+      output1: ${{ steps.set_commit_sha.outputs.COMMIT_SHA }}
   
   build:
     
@@ -42,3 +72,12 @@ jobs:
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      
+    - name: delete environment tag
+      id: tag_version1
+      uses: ClementTsang/delete-tag-and-release@v0.3.1
+      with:
+        tag_name: ${{ inputs.environment }}
+        delete_release: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} #what is github token?
