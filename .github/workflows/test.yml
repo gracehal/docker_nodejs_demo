@@ -1,0 +1,22 @@
+name: Calling workflow test
+
+on: 
+  workflow_dispatch:
+    inputs:
+        environment:
+          type: environment
+
+  schedule:
+    - cron : '20 15 * * *'
+
+
+jobs:
+  call-workflow:
+    uses: ./.github/workflows/deploy.yml
+    with: 
+      branch: Test-123
+      environment: dev
+    secrets: inherit
+    permissions:
+      id-token: write
+      contents: write
