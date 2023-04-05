@@ -7,14 +7,14 @@ on:
           type: environment
 
   schedule:
-    - cron : '20 15 * * *'
+    - cron : '05 14 * * *'
 
 
 jobs:
   call-workflow:
     uses: ./.github/workflows/deploy.yml
     with: 
-      branch: Test-123
+      branch: main
       environment: dev
     secrets: inherit
     permissions:
