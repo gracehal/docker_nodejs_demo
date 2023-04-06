@@ -12,7 +12,7 @@ on:
 
 jobs:
   call-workflow:
-    uses: ./.github/workflows/deploy.yml
+    uses: ./.github/workflows/main.yml
     with: 
       environment: dev
     secrets: inherit
